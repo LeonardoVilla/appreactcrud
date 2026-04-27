@@ -24,7 +24,7 @@ export default function Cadastro() {
         setLoading(true)
 
         const { data, error } = await supabase
-            .from('tb_aluno')
+            .from('alunos')
             .insert([
                 {
                     nome: nomeAluno, 

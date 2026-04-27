@@ -22,19 +22,12 @@ export default function HomeScreen() {
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
+        <ThemedText type="subtitle">Testar páginas do CRUD</ThemedText>
+        <Link href="/(tabs)/cadastro"><ThemedText>Cadastro de Aluno</ThemedText></Link>
+        <Link href="/(tabs)/consultar"><ThemedText>Consulta (com botões)</ThemedText></Link>
+        <Link href="/(tabs)/consultar-simples"><ThemedText>Consulta Simples</ThemedText></Link>
+        <Link href="/(tabs)/consultar-funcional"><ThemedText>Consulta Funcional (Alterar/Deletar)</ThemedText></Link>
+        <Link href="/(tabs)/alterar"><ThemedText>Página de Alteração (direto)</ThemedText></Link>
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <Link href="/modal">

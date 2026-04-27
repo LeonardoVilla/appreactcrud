@@ -1,17 +1,10 @@
-
-// Importa o cliente do Supabase para acessar o banco de dados
+// Versão funcional: botões de deletar e alterar, redirecionando para página de alteração
 import { supabase } from "@/lib/supabase";
-// Hook para navegação entre telas
 import { useRouter } from 'expo-router';
-// Hooks do React: useEffect para efeitos colaterais, useState para estado local
 import { useEffect, useState } from "react";
-// Hook do React Navigation para saber se a tela está em foco
 import { useIsFocused } from '@react-navigation/native';
-// Componentes do React Native
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-// Biblioteca para exibir mensagens de toast
 import Toast from 'react-native-toast-message';
-
 
 interface Aluno {
     id: number;
@@ -20,49 +13,29 @@ interface Aluno {
     email: string;
 }
 
-
-// Componente principal da tela de consulta de alunos
-export default function ConsultarAluno() {
-    // useState: cria uma variável de estado 'alunos' para armazenar a lista de alunos
+export default function ConsultarFuncional() {
     const [alunos, setAlunos] = useState<Aluno[]>([])
-
-    // useRouter: retorna o objeto de navegação para trocar de tela
     const router = useRouter();
-
-    // useIsFocused: retorna true quando a tela está em foco (ativa)
-    // Usado para recarregar os dados sempre que o usuário volta para esta tela
     const isFocused = useIsFocused();
 
-    // useEffect: executa um efeito colateral sempre que 'isFocused' mudar
-    // Aqui, sempre que a tela ficar em foco, chama a função para buscar os alunos
     useEffect(() => {
         if (isFocused) {
             getAlunos();
         }
     }, [isFocused]);
 
-    // Função assíncrona para buscar os alunos no banco de dados Supabase
-    // Ordena os resultados pelo nome em ordem crescente
     async function getAlunos() {
         let { data, error } = await supabase
             .from('alunos')
             .select('*')
-            .order('nome', { ascending: true }) //crescente
-            // .order('nome', { ascending: false }) //decrescente
-
+            .order('nome', { ascending: true })
         if (error) {
-            Toast.show({
-                type: 'error',
-                text1: 'Erro!',
-                text2: error.message
-            })
+            Toast.show({ type: 'error', text1: 'Erro!', text2: error.message })
         } else {
             setAlunos((data as Aluno[]) || [])
         }
     }
 
-    // Função para deletar um aluno pelo id
-    // Após deletar, remove o aluno da lista local e exibe um toast
     async function handleDelete(id: number) {
         const { error } = await supabase.from('alunos').delete().eq('id', id);
         if (error) {
@@ -73,20 +46,13 @@ export default function ConsultarAluno() {
         }
     }
 
+    function handleAlterar(aluno: Aluno) {
+        // Redireciona para a página de alteração, passando os dados do aluno via query params
+        router.push({ pathname: '/(tabs)/alterar', params: { id: aluno.id, nome: aluno.nome, idade: aluno.idade, email: aluno.email } });
+    }
+
     return (
         <View style={styles.container}>
-            {/*
-                FlatList é um componente de lista eficiente do React Native.
-                Ele renderiza apenas os itens visíveis na tela, melhorando a performance em listas grandes.
-                Principais props usadas aqui:
-                - data: array de dados a ser exibido (alunos)
-                - keyExtractor: função que retorna uma chave única para cada item
-                - contentContainerStyle: estilo do container da lista
-                - showsVerticalScrollIndicator: esconde a barra de rolagem
-                - ListHeaderComponent: componente exibido no topo da lista
-                - ListEmptyComponent: componente exibido quando a lista está vazia
-                - renderItem: função que renderiza cada item da lista
-            */}
             <FlatList
                 data={alunos}
                 keyExtractor={(item: Aluno) => item.id.toString()}
@@ -108,7 +74,7 @@ export default function ConsultarAluno() {
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={[styles.button, styles.cadastroButton]}
-                                onPress={() => router.push('/(tabs)/cadastro')}
+                                onPress={() => handleAlterar(item)}
                             >
                                 <Text style={styles.buttonText}>Alterar</Text>
                             </TouchableOpacity>
@@ -189,4 +155,4 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginTop: 32,
     },
-})
+});
